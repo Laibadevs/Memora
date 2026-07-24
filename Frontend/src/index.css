@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&family=DM+Serif+Display:ital@0;1&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+/*
+  Memora brand palette — single source of truth.
+  Mirrors the `colors` block in tailwind.config.js; use the Tailwind
+  utility classes (bg-background, text-primary, border-border, ...)
+  in components, and these variables for any raw CSS that needs them.
+*/
+:root {
+  --color-background: #000000;
+  --color-surface: #0e0e10;
+  --color-primary: #8b5cf6;
+  --color-secondary: #3b82f6;
+  --color-accent: #a855f7;
+  --color-indigo: #6366f1;
+  --color-white: #f8fafc;
+  --color-gray: #9ca3af;
+  --color-border: #24242b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--color-background);
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-secondary), var(--color-primary));
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg,
+      var(--color-secondary) 0%,
+      var(--color-primary) 60%,
+      var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Cardo', serif;
+  font-style: italic;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  color: #c4b5fd;
+}
+
+/* focus visibility for accessibility */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid #A855F7;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
