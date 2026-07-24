@@ -13,13 +13,13 @@ export default function Home() {
         <div className="min-h-screen bg-base text-memora-white font-body overflow-hidden">
             <Navbar />
             <main>
-                {/* <HeroSection />
-        <HowItWorks />
+                <HeroSection />
+                {/* <HowItWorks />
         <AskMemora />
         <ProjectOverview />
         <AIMeetingMode />
         <CTASection />
-        <FAQSection /> */}
+        <FAQSection />  */}
             </main>
             {/* <Footer /> */}
         </div>

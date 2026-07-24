@@ -68,7 +68,7 @@ export default function Navbar() {
                         <li key={link.id}>
                             <button
                                 onClick={() => goToSection(link.id)}
-                                className="group relative text-[15px] font-medium text-white/80 hover:text-white transition-colors py-1"
+                                className="group relative text-base font-medium text-white/80 hover:text-white transition-colors py-1"
                             >
                                 {link.label}
                                 <span className="absolute left-0 -bottom-0.5 h-[2px] w-0 rounded-full bg-[linear-gradient(90deg,#3B82F6,#8B5CF6,#A855F7)] transition-all duration-300 ease-out group-hover:w-full" />
@@ -79,7 +79,7 @@ export default function Navbar() {
 
                 <div className="hidden md:flex items-center gap-6">
                     <button
-                        className="group relative px-3 py-2 text-[15px] font-medium text-white/80 hover:text-white transition-all duration-300"
+                        className="group relative px-3 py-2 text-base font-medium text-white/80 hover:text-white transition-all duration-300"
                     >
                         Log in
 
@@ -117,19 +117,19 @@ export default function Navbar() {
                                 <li key={link.id}>
                                     <button
                                         onClick={() => goToSection(link.id)}
-                                        className="w-full text-left py-3 px-2 text-[15px] font-medium text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-colors border-b border-white/5 last:border-0"
+                                        className="w-full text-left py-3 px-2 text-xl font-medium text-white/80 hover:text-white hover:bg-white/5 rounded-lg transition-colors border-b border-white/5 last:border-0"
                                     >
                                         {link.label}
                                     </button>
                                 </li>
                             ))}
                             <div className="flex gap-3 pt-4">
-                                <button className="flex-1 py-2.5 text-[15px] font-medium text-white/80 border border-white/15 rounded-full hover:bg-white/5 hover:text-white transition-colors">
+                                <button className="flex-1 py-2.5 text-base font-medium text-white/80 border border-white/15 rounded-full hover:bg-white/5 hover:text-white transition-colors">
                                     Log in
                                 </button>
                                 <button
                                     onClick={() => goToSection('pricing')}
-                                    className="flex-1 py-2.5 text-[15px] font-medium text-white rounded-full bg-[linear-gradient(90deg,#3B82F6_0%,#6366F1_40%,#8B5CF6_75%,#A855F7_100%)]"
+                                    className="flex-1 py-2.5 text-base font-medium text-white rounded-full bg-[linear-gradient(90deg,#3B82F6_0%,#6366F1_40%,#8B5CF6_75%,#A855F7_100%)]"
                                 >
                                     Sign Up
                                 </button>
