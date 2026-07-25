@@ -1,409 +1,502 @@
-import { useMemo } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
-import MemoraLogo from '../assets/Memora_Logo.png'
-import IntegrationIcon from './IntegrationIcon'
-import { integrations, ORB_CENTER, PLATFORM_CENTER } from '../../src/data/integration'
 
-/* ------------------------------------------------------------------ */
-/*  Timeline constants (seconds) — mirrors the Phase 1–7 animation brief */
-/* ------------------------------------------------------------------ */
-const T_PLATFORM_START = 1
-const T_PLATFORM_STEP = 0.28
-const T_ICONS_START = 2
-const T_ICONS_STEP = 0.26
-const T_ORB_CHARGE = 4
-const T_LOGO_DRAW = 5
-const T_LOGO_PULSE = 6
-const T_IDLE_START = 7
+import logo from "../assets/LOGO.png";
+import { motion, useAnimationControls } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
 
-const PLATFORM_RINGS = [
-    { rx: 15, ry: 4.6, color: '#3B82F6' },
-    { rx: 21, ry: 6.2, color: '#6366F1' },
-    { rx: 27, ry: 7.8, color: '#8B5CF6' },
-    { rx: 33, ry: 9.4, color: '#A855F7' },
-]
 
-/** Builds a gently curved (never straight) SVG path from an icon card to the orb. */
-function buildCurvePath(x1: number, y1: number, x2: number, y2: number, bend: number) {
-    const midX = (x1 + x2) / 2
-    const midY = (y1 + y2) / 2
-    const dx = x2 - x1
-    const dy = y2 - y1
-    const len = Math.hypot(dx, dy) || 1
-    const perpX = -dy / len
-    const perpY = dx / len
-    const curve = len * bend
-    const cx = midX + perpX * curve
-    const cy = midY + perpY * curve
-    return `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`
-}
+/**
+ * Cinematic Memora hero orb
+ * - System boot → platform → integrations → orb charge → logo → network → idle loop
+ * Pure SVG + framer-motion, GPU-friendly transforms, responsive via viewBox.
+ */
 
-export default function HeroOrb3D() {
-    const reduceMotion = useReducedMotion()
+type Integration = {
+    key: string;
+    label: string;
+    src: string;
+    /** activation order index (0..7) */
+    order: number;
+};
 
-    const stars = useMemo(
-        () =>
-            Array.from({ length: 26 }, (_, i) => ({
-                id: i,
-                x: Math.random() * 100,
-                y: Math.random() * 100,
-                size: 0.6 + Math.random() * 1.2,
-                delay: Math.random() * 4,
-                duration: 2.5 + Math.random() * 2.5,
-            })),
-        []
-    )
+// Activation order: Zapier, Notion, GitHub, OpenAI, PDF, Figma, Google Docs, Slack
+const INTEGRATIONS: Integration[] = [
+    { key: "zapier", label: "Zapier", src: "https://cdn.simpleicons.org/zapier/ff4a00", order: 0 },
+    { key: "notion", label: "Notion", src: "https://cdn.simpleicons.org/notion/ffffff", order: 1 },
+    { key: "github", label: "GitHub", src: "https://cdn.simpleicons.org/github/ffffff", order: 2 },
+    { key: "openai", label: "OpenAI", src: "https://cdn.simpleicons.org/openai/10a37f", order: 3 },
+    { key: "pdf", label: "PDF", src: "https://cdn.simpleicons.org/adobeacrobatreader/ec1c24", order: 4 },
+    { key: "figma", label: "Figma", src: "https://cdn.simpleicons.org/figma/a259ff", order: 5 },
+    { key: "gdocs", label: "Google Docs", src: "https://cdn.simpleicons.org/googledocs/4285f4", order: 6 },
+    { key: "slack", label: "Slack", src: "https://cdn.simpleicons.org/slack/4a154b", order: 7 },
+];
 
-    const orbParticles = useMemo(
-        () =>
-            Array.from({ length: 14 }, (_, i) => ({
-                id: i,
-                x: 20 + Math.random() * 60,
-                y: 20 + Math.random() * 60,
-                size: 1.2 + Math.random() * 1.6,
-                delay: T_ORB_CHARGE + Math.random() * 2,
-                duration: 3 + Math.random() * 2,
-            })),
-        []
-    )
+// SVG canvas
+const VB = 600;
+const CX = VB / 2;
+const CY = VB / 2 - 20;
+const ORBIT_R = 220;
+const ORB_R = 70;
+
+// Icon layout — even distribution starting at top
+const positioned = INTEGRATIONS
+    .slice()
+    .sort((a, b) => a.order - b.order)
+    .map((it, i, arr) => {
+        // Visual position around circle — spread by visual index so they don't cluster
+        const angle = (i / arr.length) * Math.PI * 2 - Math.PI / 2;
+        return {
+            ...it,
+            x: CX + Math.cos(angle) * ORBIT_R,
+            y: CY + Math.sin(angle) * ORBIT_R,
+        };
+    });
+
+// Timeline anchors (seconds)
+const T = {
+    boot: 0,
+    platform: 1,
+    integrationsStart: 2,
+    perIntegration: 0.25, // stagger
+    orbCharge: 4,
+    logo: 5,
+    network: 6,
+};
+
+export function HeroOrb() {
+    const [booted, setBooted] = useState(false);
+    useEffect(() => {
+        const t = setTimeout(() => setBooted(true), T.network * 1000 + 500);
+        return () => clearTimeout(t);
+    }, []);
+
+    // Random idle pulses across lines
+    const [pulseTick, setPulseTick] = useState(0);
+    useEffect(() => {
+        if (!booted) return;
+        const id = setInterval(() => setPulseTick((n) => n + 1), 1800);
+        return () => clearInterval(id);
+    }, [booted]);
+
+    const randomLineIdx = useMemo(
+        () => Math.floor(Math.random() * positioned.length),
+        [pulseTick],
+    );
 
     return (
-        <motion.div
-            className="relative w-full h-full select-none"
-            aria-hidden="true"
-            initial={{ y: 0 }}
-            animate={reduceMotion ? {} : { y: [0, -6, 0] }}
-            transition={
-                reduceMotion
-                    ? undefined
-                    : { duration: 9, delay: T_IDLE_START, repeat: Infinity, ease: 'easeInOut' }
-            }
-        >
-            {/* ---------- Background ambience: radial glows + star particles ---------- */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[28px]">
-                <div className="absolute top-[30%] left-1/2 -translate-x-1/2 w-[75%] aspect-square rounded-full bg-[#3B82F6] opacity-[0.14] blur-[90px]" />
-                <div className="absolute top-[62%] left-1/2 -translate-x-1/2 w-[65%] aspect-square rounded-full bg-[#8B5CF6] opacity-[0.16] blur-[100px]" />
-                {stars.map((s) => (
-                    <motion.span
-                        key={s.id}
-                        className="absolute rounded-full bg-white"
-                        style={{ left: `${s.x}%`, top: `${s.y}%`, width: s.size, height: s.size }}
-                        initial={{ opacity: 0.1 }}
-                        animate={reduceMotion ? { opacity: 0.35 } : { opacity: [0.1, 0.7, 0.1] }}
-                        transition={
-                            reduceMotion
-                                ? undefined
-                                : { duration: s.duration, delay: s.delay, repeat: Infinity, ease: 'easeInOut' }
-                        }
-                    />
-                ))}
-            </div>
+        <div className="relative w-full h-[420px] md:h-[560px] flex items-center justify-center select-none">
+            {/* Ambient background glow */}
+            <motion.div
+                aria-hidden
+                className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 2, delay: T.platform }}
+            >
+                <div className="w-[60%] h-[60%] rounded-full blur-2xl"
+                    style={{ background: "radial-gradient(circle, oklch(0.55 0.25 285 / 0.35), transparent 65%)" }} />
+            </motion.div>
 
-            {/* ---------- SVG layer: platform rings + connection network ---------- */}
-            <svg
-                className="absolute inset-0 w-full h-full overflow-visible"
-                viewBox="0 0 100 100"
-                preserveAspectRatio="xMidYMid meet"
+            {/* Floating whole scene */}
+            <motion.svg
+                viewBox={`0 0 ${VB} ${VB}`}
+                className="relative w-full h-full max-w-[640px]"
+                animate={booted ? { y: [0, -6, 0] } : undefined}
+                transition={{ duration: 9, ease: "easeInOut", repeat: Infinity }}
             >
                 <defs>
-                    <linearGradient id="hero-line-grad" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stopColor="#3B82F6" />
-                        <stop offset="55%" stopColor="#8B5CF6" />
-                        <stop offset="100%" stopColor="#A855F7" />
+                    <radialGradient id="orbFill" cx="50%" cy="60%" r="60%">
+                        <stop offset="0%" stopColor="oklch(0.85 0.15 285)" stopOpacity="0.95" />
+                        <stop offset="55%" stopColor="oklch(0.5 0.22 290)" stopOpacity="0.9" />
+                        <stop offset="100%" stopColor="oklch(0.2 0.1 275)" stopOpacity="0.85" />
+                    </radialGradient>
+                    <radialGradient id="orbBloom" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stopColor="oklch(0.85 0.2 285)" stopOpacity="0.7" />
+                        <stop offset="100%" stopColor="oklch(0.85 0.2 285)" stopOpacity="0" />
+                    </radialGradient>
+                    <linearGradient id="lineGrad" x1="0" x2="1" y1="0" y2="0">
+                        <stop offset="0%" stopColor="oklch(0.7 0.19 240)" stopOpacity="0.1" />
+                        <stop offset="100%" stopColor="oklch(0.7 0.22 300)" stopOpacity="0.9" />
                     </linearGradient>
-                    <filter id="hero-soft-blur" x="-40%" y="-40%" width="180%" height="180%">
-                        <feGaussianBlur stdDeviation="0.9" />
+                    <linearGradient id="ringGrad" x1="0" x2="1" y1="0" y2="1">
+                        <stop offset="0%" stopColor="oklch(0.7 0.2 240)" />
+                        <stop offset="50%" stopColor="oklch(0.6 0.24 275)" />
+                        <stop offset="100%" stopColor="oklch(0.62 0.24 305)" />
+                    </linearGradient>
+                    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="3" result="b" />
+                        <feMerge>
+                            <feMergeNode in="b" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
+                    <filter id="bigGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="7" />
                     </filter>
                 </defs>
 
-                {/* Phase 2 — platform rings, activating bottom-up, blue -> indigo -> purple */}
-                <g transform={`translate(${PLATFORM_CENTER.x} ${PLATFORM_CENTER.y})`}>
-                    {PLATFORM_RINGS.map((ring, i) => (
+                {/* ================= PLATFORM ================= */}
+                <g transform={`translate(${CX} ${CY + ORB_R + 40})`}>
+                    {[0, 1, 2].map((i) => {
+                        const rx = 190 - i * 38;
+                        const ry = 32 - i * 6;
+                        return (
+                            <motion.ellipse
+                                key={i}
+                                cx={0} cy={0}
+                                rx={rx} ry={ry}
+                                fill="none"
+                                stroke="url(#ringGrad)"
+                                strokeWidth={1.2}
+                                filter="url(#softGlow)"
+                                initial={{ opacity: 0, scale: 0.85 }}
+                                animate={{
+                                    opacity: [0, 0.9, 0.55],
+                                    scale: [0.85, 1.05, 1],
+                                }}
+                                transition={{
+                                    duration: 1.1,
+                                    delay: T.platform + i * 0.28,
+                                    ease: "easeOut",
+                                    times: [0, 0.6, 1],
+                                }}
+                                style={{ transformOrigin: "center" }}
+                            />
+                        );
+                    })}
+                    {/* Idle expanding rings */}
+                    {booted && [0, 1].map((i) => (
                         <motion.ellipse
-                            key={i}
-                            cx="0"
-                            cy="0"
-                            rx={ring.rx}
-                            ry={ring.ry}
+                            key={`idle-${i}`}
+                            cx={0} cy={0}
+                            rx={120} ry={20}
                             fill="none"
-                            stroke={ring.color}
-                            strokeWidth="0.55"
-                            style={{ filter: 'url(#hero-soft-blur)' }}
-                            initial={{ opacity: 0, scale: 0.85 }}
-                            animate={
-                                reduceMotion
-                                    ? { opacity: 0.55, scale: 1 }
-                                    : { opacity: [0, 0.9, 0.5, 0.65, 0.5], scale: [0.85, 1.06, 1, 1.015, 1] }
-                            }
-                            transition={
-                                reduceMotion
-                                    ? undefined
-                                    : {
-                                        duration: 4,
-                                        delay: T_PLATFORM_START + i * T_PLATFORM_STEP,
-                                        repeat: Infinity,
-                                        repeatDelay: 3,
-                                        ease: 'easeInOut',
-                                    }
-                            }
+                            stroke="oklch(0.7 0.2 285 / 0.6)"
+                            strokeWidth={1}
+                            initial={{ opacity: 0.6, scale: 0.5 }}
+                            animate={{ opacity: [0.6, 0], scale: [0.5, 1.6] }}
+                            transition={{ duration: 3.5, delay: i * 1.75, ease: "easeOut", repeat: Infinity }}
+                            style={{ transformOrigin: "center" }}
                         />
                     ))}
                 </g>
 
-                {/* Phase 3 & 6 — curved connection lines + traveling energy pulses */}
-                {integrations.map((it, i) => {
-                    const path = buildCurvePath(
-                        it.x,
-                        it.y,
-                        ORB_CENTER.x,
-                        ORB_CENTER.y,
-                        i % 2 === 0 ? 0.16 : -0.16
-                    )
-                    const activateDelay = T_ICONS_START + it.activationOrder * T_ICONS_STEP
-                    const pulseDelay = activateDelay + 0.18
-                    const idlePeriod = 6 + (i % 4) * 1.4 // varied recurrence so pulses feel random, not synced
-
+                {/* Rising platform particles (subtle boot phase + ongoing) */}
+                {Array.from({ length: 14 }).map((_, i) => {
+                    const x = CX + (Math.random() - 0.5) * 320;
+                    const y0 = CY + ORB_R + 60;
                     return (
-                        <g key={it.key}>
-                            <motion.path
-                                d={path}
-                                fill="none"
-                                stroke="url(#hero-line-grad)"
-                                strokeWidth="0.35"
-                                strokeLinecap="round"
-                                initial={{ pathLength: 0, opacity: 0 }}
-                                animate={
-                                    reduceMotion
-                                        ? { pathLength: 1, opacity: 0.45 }
-                                        : { pathLength: 1, opacity: [0, 0.8, 0.4, 0.55, 0.4] }
-                                }
-                                transition={
-                                    reduceMotion
-                                        ? undefined
-                                        : {
-                                            pathLength: { duration: 0.6, delay: activateDelay, ease: 'easeOut' },
-                                            opacity: {
-                                                duration: 4,
-                                                delay: activateDelay,
-                                                repeat: Infinity,
-                                                repeatDelay: 3,
-                                                ease: 'easeInOut',
-                                            },
-                                        }
-                                }
-                            />
-                            {!reduceMotion && (
-                                <circle r="0.9" fill={it.color} opacity="0">
-                                    <animateMotion
-                                        path={path}
-                                        dur={`${idlePeriod}s`}
-                                        begin={`${pulseDelay}s`}
-                                        repeatCount="indefinite"
-                                        calcMode="linear"
-                                    />
-                                    <animate
-                                        attributeName="opacity"
-                                        values="0;1;1;0;0"
-                                        keyTimes="0;0.04;0.16;0.22;1"
-                                        dur={`${idlePeriod}s`}
-                                        begin={`${pulseDelay}s`}
-                                        repeatCount="indefinite"
-                                    />
-                                </circle>
-                            )}
-                        </g>
-                    )
-                })}
-            </svg>
-
-            {/* ---------- Center orb ---------- */}
-            <div
-                className="absolute"
-                style={{
-                    top: `${ORB_CENTER.y - 21}%`,
-                    left: `${ORB_CENTER.x}%`,
-                    width: '42%',
-                    transform: 'translateX(-50%)',
-                }}
-            >
-                <div className="relative aspect-square">
-                    {/* outer atmospheric glow */}
-                    <motion.div
-                        className="absolute -inset-8 rounded-full bg-[#8B5CF6] blur-3xl"
-                        initial={{ opacity: 0.05 }}
-                        animate={reduceMotion ? { opacity: 0.28 } : { opacity: [0.05, 0.35, 0.22, 0.32, 0.22] }}
-                        transition={
-                            reduceMotion
-                                ? undefined
-                                : { duration: 5, delay: T_ORB_CHARGE, repeat: Infinity, ease: 'easeInOut' }
-                        }
-                    />
-
-                    {/* glass sphere — one-shot charge-in (Phase 4) */}
-                    <motion.div
-                        className="absolute inset-0 rounded-full border"
-                        style={{
-                            borderColor: 'rgba(168,85,247,0.5)',
-                            background:
-                                'radial-gradient(circle at 35% 30%, rgba(59,130,246,0.35), rgba(139,92,246,0.18) 45%, rgba(5,5,5,0.05) 75%)',
-                            backdropFilter: 'blur(6px)',
-                            boxShadow: '0 0 60px 10px rgba(139,92,246,0.35), inset 0 0 40px rgba(59,130,246,0.25)',
-                        }}
-                        initial={{ opacity: 0.12, scale: 0.86 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={reduceMotion ? { duration: 0.4 } : { duration: 1, delay: T_ORB_CHARGE, ease: 'easeOut' }}
-                    >
-                        {/* continuous breathing pulse layered on top, starts once charged */}
-                        <motion.div
-                            className="absolute inset-0 rounded-full"
-                            animate={
-                                reduceMotion
-                                    ? {}
-                                    : { scale: [1, 1.035, 1], opacity: [0.85, 1, 0.85] }
-                            }
-                            transition={
-                                reduceMotion
-                                    ? undefined
-                                    : { duration: 4.5, delay: T_LOGO_PULSE, repeat: Infinity, ease: 'easeInOut' }
-                            }
-                            style={{
-                                background:
-                                    'radial-gradient(circle at 35% 30%, rgba(59,130,246,0.25), transparent 60%)',
+                        <motion.circle
+                            key={`p-${i}`}
+                            cx={x} cy={y0} r={1.4}
+                            fill="oklch(0.85 0.15 290)"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: [0, 0.8, 0], y: [0, -160 - Math.random() * 60] }}
+                            transition={{
+                                duration: 4 + Math.random() * 3,
+                                delay: (i * 0.3) % 4,
+                                repeat: Infinity,
+                                ease: "easeOut",
                             }}
                         />
+                    );
+                })}
 
-                        {/* reflection highlight */}
-                        <div
-                            className="absolute rounded-full bg-white/30 blur-[3px]"
-                            style={{ top: '14%', left: '22%', width: '20%', height: '10%' }}
-                        />
-
-                        {/* inner drifting particles */}
-                        {orbParticles.map((p) => (
-                            <motion.span
-                                key={p.id}
-                                className="absolute rounded-full bg-white"
-                                style={{ left: `${p.x}%`, top: `${p.y}%`, width: p.size, height: p.size }}
+                {/* ================= CONNECTION LINES ================= */}
+                {positioned.map((p, i) => {
+                    const activateAt = T.integrationsStart + p.order * T.perIntegration;
+                    return (
+                        <g key={`line-${p.key}`}>
+                            <motion.line
+                                x1={CX} y1={CY} x2={p.x} y2={p.y}
+                                stroke="url(#lineGrad)"
+                                strokeWidth={1}
                                 initial={{ opacity: 0 }}
-                                animate={
-                                    reduceMotion
-                                        ? { opacity: 0.5 }
-                                        : { opacity: [0, 0.8, 0], y: [0, -8, 0] }
-                                }
-                                transition={
-                                    reduceMotion
-                                        ? undefined
-                                        : { duration: p.duration, delay: p.delay, repeat: Infinity, ease: 'easeInOut' }
-                                }
+                                animate={{ opacity: [0, 0.35, 0.22] }}
+                                transition={{
+                                    duration: 0.6,
+                                    delay: activateAt + 0.1,
+                                    times: [0, 0.6, 1],
+                                }}
                             />
-                        ))}
-
-                        {/* Phase 5 — Memora logo, revealed with a left-to-right clip wipe
-                (the real logo asset already goes blue -> purple left to right,
-                so the wipe reads as "blue side, then purple side" without
-                redrawing the artwork). */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <motion.div
-                                className="relative w-[52%]"
-                                initial={{ clipPath: 'inset(0 100% 0 0)' }}
-                                animate={{ clipPath: 'inset(0 0% 0 0)' }}
-                                transition={reduceMotion ? { duration: 0.4 } : { duration: 1, delay: T_LOGO_DRAW, ease: 'easeInOut' }}
-                            >
-                                <motion.img
-                                    src={MemoraLogo}
-                                    alt="Memora"
-                                    className="w-full h-full object-contain"
-                                    style={{ filter: 'drop-shadow(0 0 18px rgba(139,92,246,0.65))' }}
-                                    animate={
-                                        reduceMotion
-                                            ? {}
-                                            : { scale: [1, 1, 1.05, 1] }
-                                    }
-                                    transition={
-                                        reduceMotion
-                                            ? undefined
-                                            : { duration: 0.9, delay: T_LOGO_PULSE, times: [0, 0.55, 0.8, 1], ease: 'easeOut' }
-                                    }
-                                />
-                            </motion.div>
-                        </div>
-                    </motion.div>
-
-                    {/* beam projecting down toward the platform */}
-                    <motion.div
-                        className="absolute left-1/2 top-full -translate-x-1/2 w-[3px]"
-                        style={{
-                            height: `${(PLATFORM_CENTER.y - ORB_CENTER.y) * 2.3}%`,
-                            background: 'linear-gradient(180deg, rgba(139,92,246,0.75), transparent)',
-                        }}
-                        initial={{ opacity: 0 }}
-                        animate={reduceMotion ? { opacity: 0.6 } : { opacity: [0, 0.75, 0.45, 0.65, 0.45] }}
-                        transition={
-                            reduceMotion
-                                ? undefined
-                                : { duration: 4, delay: T_ORB_CHARGE, repeat: Infinity, ease: 'easeInOut' }
-                        }
-                    />
-                </div>
-            </div>
-
-            {/* ---------- Integration cards ---------- */}
-            {integrations.map((it, i) => {
-                const activateDelay = T_ICONS_START + it.activationOrder * T_ICONS_STEP
-                const floatDuration = 3.2 + (i % 3) * 0.6
-                const floatDelay = T_IDLE_START + i * 0.35
-
-                return (
-                    <motion.div
-                        key={it.key}
-                        className="absolute w-11 h-11 md:w-14 md:h-14 rounded-2xl flex items-center justify-center"
-                        style={{
-                            top: `${it.y}%`,
-                            left: `${it.x}%`,
-                            transform: 'translate(-50%, -50%)',
-                            color: it.color,
-                            background: 'rgba(14,14,16,0.65)',
-                            border: '1px solid #24242B',
-                            backdropFilter: 'blur(10px)',
-                            boxShadow: `0 0 22px -6px ${it.color}99, 0 8px 20px -8px rgba(0,0,0,0.6)`,
-                        }}
-                        initial={{ opacity: 0, scale: 0.7 }}
-                        animate={
-                            reduceMotion
-                                ? { opacity: 1, scale: 1 }
-                                : {
-                                    opacity: 1,
-                                    scale: [0.7, 1.12, 0.96, 1],
-                                    y: [0, -3, 0, 3, 0],
-                                }
-                        }
-                        transition={
-                            reduceMotion
-                                ? { duration: 0.4 }
-                                : {
-                                    opacity: { duration: 0.35, delay: activateDelay },
-                                    scale: {
-                                        duration: 0.6,
-                                        delay: activateDelay,
-                                        times: [0, 0.55, 0.8, 1],
-                                        ease: 'easeOut',
-                                    },
-                                    y: {
-                                        duration: floatDuration,
-                                        delay: floatDelay,
+                            {/* Breathing glow after network wakes */}
+                            {booted && (
+                                <motion.line
+                                    x1={CX} y1={CY} x2={p.x} y2={p.y}
+                                    stroke="oklch(0.7 0.22 285 / 0.5)"
+                                    strokeWidth={1.5}
+                                    filter="url(#softGlow)"
+                                    animate={{ opacity: [0.15, 0.5, 0.15] }}
+                                    transition={{
+                                        duration: 3.5 + i * 0.15,
                                         repeat: Infinity,
-                                        repeatType: 'mirror',
-                                        ease: 'easeInOut',
-                                    },
-                                }
-                        }
-                        title={it.label}
-                        aria-label={it.label}
-                    >
-                        <IntegrationIcon type={it.key} size={20} />
-                    </motion.div>
-                )
-            })}
-        </motion.div>
-    )
+                                        ease: "easeInOut",
+                                    }}
+                                />
+                            )}
+                            {/* Energy pulse traveling to center on activation */}
+                            <EnergyPulse
+                                fromX={p.x} fromY={p.y} toX={CX} toY={CY}
+                                delay={activateAt + 0.15}
+                            />
+                            {/* Idle random pulses */}
+                            {booted && i === randomLineIdx && (
+                                <EnergyPulse
+                                    key={`idle-pulse-${pulseTick}`}
+                                    fromX={p.x} fromY={p.y} toX={CX} toY={CY}
+                                    delay={0}
+                                />
+                            )}
+                            {/* Continuous data particles */}
+                            {booted && (
+                                <DataStream
+                                    fromX={p.x} fromY={p.y} toX={CX} toY={CY}
+                                    offset={i * 0.35}
+                                />
+                            )}
+                        </g>
+                    );
+                })}
+
+                {/* ================= CENTRAL ORB ================= */}
+                {/* Outer bloom */}
+                <motion.circle
+                    cx={CX} cy={CY} r={ORB_R + 40}
+                    fill="url(#orbBloom)"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: booted ? [0.55, 0.85, 0.55] : [0, 0.5] }}
+                    transition={
+                        booted
+                            ? { duration: 4, repeat: Infinity, ease: "easeInOut" }
+                            : { duration: 1.2, delay: T.orbCharge }
+                    }
+                    style={{ transformOrigin: `${CX}px ${CY}px` }}
+                />
+                {/* Orb body */}
+                <motion.circle
+                    cx={CX} cy={CY} r={ORB_R}
+                    fill="url(#orbFill)"
+                    stroke="oklch(0.85 0.1 285 / 0.6)"
+                    strokeWidth={1}
+                    initial={{ opacity: 0.2, scale: 0.9 }}
+                    animate={{
+                        opacity: 1,
+                        scale: booted ? [1, 1.035, 1] : [0.9, 1.05, 1],
+                    }}
+                    transition={
+                        booted
+                            ? { duration: 5, repeat: Infinity, ease: "easeInOut" }
+                            : { duration: 1.2, delay: T.orbCharge, ease: "easeOut" }
+                    }
+                    style={{ transformOrigin: `${CX}px ${CY}px` }}
+                />
+                {/* Charging fill mask - a rising glow */}
+                <motion.circle
+                    cx={CX} cy={CY + ORB_R} r={ORB_R * 0.9}
+                    fill="oklch(0.75 0.22 285 / 0.7)"
+                    filter="url(#bigGlow)"
+                    initial={{ opacity: 0, y: 0 }}
+                    animate={{ opacity: [0, 0.9, 0], y: [0, -ORB_R * 1.6, -ORB_R * 2] }}
+                    transition={{ duration: 1.1, delay: T.orbCharge, ease: "easeOut" }}
+                />
+                {/* Inner circulating particles */}
+                {booted && Array.from({ length: 6 }).map((_, i) => {
+                    const a = (i / 6) * Math.PI * 2;
+                    return (
+                        <motion.circle
+                            key={`inner-${i}`}
+                            r={1.6}
+                            fill="oklch(0.95 0.05 285)"
+                            initial={{ cx: CX + Math.cos(a) * 20, cy: CY + Math.sin(a) * 20, opacity: 0.6 }}
+                            animate={{
+                                cx: [
+                                    CX + Math.cos(a) * 30,
+                                    CX + Math.cos(a + Math.PI) * 30,
+                                    CX + Math.cos(a + 2 * Math.PI) * 30,
+                                ],
+                                cy: [
+                                    CY + Math.sin(a) * 30,
+                                    CY + Math.sin(a + Math.PI) * 30,
+                                    CY + Math.sin(a + 2 * Math.PI) * 30,
+                                ],
+                            }}
+                            transition={{ duration: 6 + i * 0.4, repeat: Infinity, ease: "linear" }}
+                        />
+                    );
+                })}
+
+                {/* ================= INTEGRATIONS ================= */}
+                {positioned.map((p) => {
+                    const activateAt = T.integrationsStart + p.order * T.perIntegration;
+                    return (
+                        <g key={`icon-${p.key}`}>
+                            {/* Faint boot outline */}
+                            <motion.circle
+                                cx={p.x} cy={p.y} r={26}
+                                fill="none"
+                                stroke="oklch(0.6 0.1 280 / 0.4)"
+                                strokeWidth={1}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: [0, 0.5] }}
+                                transition={{ duration: 1, delay: T.boot + 0.2 }}
+                            />
+                            {/* Activated tile */}
+                            <motion.g
+                                initial={{ opacity: 0, scale: 0.7 }}
+                                animate={{
+                                    opacity: 1,
+                                    scale: [0.7, 1.15, 1],
+                                }}
+                                transition={{
+                                    duration: 0.55,
+                                    delay: activateAt,
+                                    ease: [0.34, 1.56, 0.64, 1],
+                                }}
+                                style={{ transformOrigin: `${p.x}px ${p.y}px` }}
+                            >
+                                <motion.circle
+                                    cx={p.x} cy={p.y} r={26}
+                                    fill="oklch(0.18 0.04 275 / 0.85)"
+                                    stroke="oklch(0.6 0.2 285 / 0.7)"
+                                    strokeWidth={1}
+                                    filter="url(#softGlow)"
+                                />
+                                {/* Foreign icons via <image> */}
+                                <image
+                                    href={p.src}
+                                    x={p.x - 14} y={p.y - 14}
+                                    width={28} height={28}
+                                    style={{ filter: "drop-shadow(0 0 6px rgba(150,100,255,0.35))" }}
+                                />
+                            </motion.g>
+                            {/* Idle floating (subtle, per-icon timing) */}
+                            {booted && (
+                                <FloatingWrap x={p.x} y={p.y} seed={p.order} />
+                            )}
+                        </g>
+                    );
+                })}
+            </motion.svg>
+
+            {/* Logo overlay (positioned over orb) — built in two halves */}
+            <LogoBuild />
+        </div>
+    );
+}
+
+/* ---------- Sub-components ---------- */
+
+function EnergyPulse({
+    fromX, fromY, toX, toY, delay,
+}: { fromX: number; fromY: number; toX: number; toY: number; delay: number }) {
+    return (
+        <motion.circle
+            r={3.5}
+            fill="oklch(0.95 0.15 285)"
+            filter="url(#softGlow)"
+            initial={{ cx: fromX, cy: fromY, opacity: 0 }}
+            animate={{ cx: toX, cy: toY, opacity: [0, 1, 0] }}
+            transition={{ duration: 0.7, delay, ease: "easeIn" }}
+        />
+    );
+}
+
+function DataStream({
+    fromX, fromY, toX, toY, offset,
+}: { fromX: number; fromY: number; toX: number; toY: number; offset: number }) {
+    return (
+        <>
+            {[0, 1].map((i) => (
+                <motion.circle
+                    key={i}
+                    r={1.6}
+                    fill="oklch(0.9 0.15 285)"
+                    initial={{ cx: fromX, cy: fromY, opacity: 0 }}
+                    animate={{ cx: toX, cy: toY, opacity: [0, 0.9, 0] }}
+                    transition={{
+                        duration: 2.4,
+                        repeat: Infinity,
+                        delay: offset + i * 1.2,
+                        ease: "easeIn",
+                    }}
+                />
+            ))}
+        </>
+    );
+}
+
+function FloatingWrap({ x, y, seed }: { x: number; y: number; seed: number }) {
+    // Non-synced gentle float for the tile shadow (icon <g> already rendered).
+    // Kept as pure decoration ring pulse per icon.
+    const dur = 3 + (seed % 4) * 0.7;
+    const dly = (seed * 0.37) % 2;
+    return (
+        <motion.circle
+            cx={x} cy={y} r={26}
+            fill="none"
+            stroke="oklch(0.7 0.22 285 / 0.35)"
+            strokeWidth={1}
+            animate={{ scale: [1, 1.08, 1], opacity: [0.35, 0.7, 0.35] }}
+            transition={{ duration: dur, delay: dly, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: `${x}px ${y}px` }}
+        />
+    );
+}
+
+function LogoBuild() {
+    const controls = useAnimationControls();
+    useEffect(() => {
+        (async () => {
+            // Wait for logo phase
+            await new Promise((r) => setTimeout(r, T.logo * 1000));
+            await controls.start({
+                opacity: 1,
+                scale: [0.7, 1.05, 1],
+                filter: [
+                    "drop-shadow(0 0 0px rgba(150,100,255,0))",
+                    "drop-shadow(0 0 14px rgba(150,100,255,0.8))",
+                    "drop-shadow(0 0 8px rgba(150,100,255,0.55))",
+                ],
+                transition: { duration: 1, ease: "easeOut" },
+            });
+            // Idle breathing
+            controls.start({
+                scale: [1, 1.03, 1],
+                transition: { duration: 5, repeat: Infinity, ease: "easeInOut" },
+            });
+        })();
+    }, [controls]);
+
+    return (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            style={{ transform: "translateY(-3.3%)" }}>
+            <div className="relative w-24 md:w-32 aspect-square">
+                {/* Left half reveal (blue side) */}
+                <motion.img
+                    src={logo} alt=""
+                    className="absolute inset-0 w-full h-full object-contain"
+                    initial={{ clipPath: "inset(0 100% 0 0)", opacity: 0 }}
+                    animate={{ clipPath: "inset(0 50% 0 0)", opacity: 1 }}
+                    transition={{ duration: 0.5, delay: T.logo, ease: "easeOut" }}
+                    style={{ filter: "drop-shadow(0 0 10px rgba(80,140,255,0.7))" }}
+                />
+                {/* Right half reveal (purple side) */}
+                <motion.img
+                    src={logo} alt=""
+                    className="absolute inset-0 w-full h-full object-contain"
+                    initial={{ clipPath: "inset(0 0 0 100%)", opacity: 0 }}
+                    animate={{ clipPath: "inset(0 0 0 50%)", opacity: 1 }}
+                    transition={{ duration: 0.5, delay: T.logo + 0.25, ease: "easeOut" }}
+                    style={{}}
+                />
+                {/* Final settled logo */}
+                <motion.img
+                    src={logo}
+                    alt="Memora"
+                    className="absolute inset-0 w-full h-full object-contain"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={controls}
+                />
+            </div>
+        </div>
+    );
 }

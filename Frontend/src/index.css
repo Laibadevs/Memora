@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&family=DM+Serif+Display:ital@0;1&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 /*
@@ -17,6 +17,12 @@
   --color-white: #f8fafc;
   --color-gray: #9ca3af;
   --color-border: #24242b;
+
+  /* Typography — DM Serif Display for headings, Cardo for subheadings/
+     eyebrow labels, Inter for everything else (body copy, UI, buttons). */
+  --font-heading: 'Cardo', serif;
+  --font-subheading: 'DM Serif Display', serif;
+  --font-body: 'Inter', sans-serif;
 }
 
 * {
@@ -29,13 +35,25 @@ html {
 
 body {
   margin: 0;
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--font-body);
   background-color: var(--color-background);
   overflow-x: hidden;
 }
 
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+}
+
+h4,
+h5,
+h6 {
+  font-family: var(--font-subheading);
+}
+
 ::-webkit-scrollbar {
-  width: 8px;
+  display: none;
 }
 
 ::-webkit-scrollbar-track {
@@ -80,7 +98,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Cardo', serif;
+  font-family: var(--font-subheading);
   font-style: italic;
   font-size: 0.8rem;
   font-weight: 500;

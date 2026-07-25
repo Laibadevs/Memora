@@ -53,7 +53,7 @@ export default function Navbar() {
             className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${scrolled ? 'bg-[#050505]/80 backdrop-blur-md border-b border-white/5' : 'bg-transparent'
                 }`}
         >
-            <nav className="max-w-[1650px] mx-auto flex items-center justify-between px-6 lg:px-12 h-16 md:h-20">
+            <nav className="max-w-[1650px] mx-auto flex items-center justify-between px-6 pt-5 lg:px-12 h-16 md:h-20">
                 <button
                     onClick={() => goToSection('hero')}
                     className="flex items-center gap-4 shrink-0"

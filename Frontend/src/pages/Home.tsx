@@ -1,6 +1,6 @@
 import Navbar from '../components/Navbar'
 import HeroSection from '../components/HeroSection'
-// import HowItWorks from '../components/HowItWorks'
+import HowItWorks from '../components/HowItWorks'
 // import AskMemora from '../components/AskMemora'
 // import ProjectOverview from '../components/ProjectOverview'
 // import AIMeetingMode from '../components/AIMeetingMode'
@@ -14,12 +14,12 @@ export default function Home() {
             <Navbar />
             <main>
                 <HeroSection />
-                {/* <HowItWorks />
-        <AskMemora />
+                <HowItWorks />
+                {/* <AskMemora />
         <ProjectOverview />
         <AIMeetingMode />
         <CTASection />
-        <FAQSection />  */}
+        <FAQSection />   */}
             </main>
             {/* <Footer /> */}
         </div>

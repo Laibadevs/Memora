@@ -1,19 +1,31 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, Play, Sparkles } from 'lucide-react'
-import heroright from "../assets/heroright.png";
+import { HeroOrb } from "./HeroOrb3d";
 
 export default function HeroSection() {
     return (
         <section
             id="hero"
-            className="relative min-h-screen flex items-center pt-28 pb-16 md:pt-32 overflow-hidden"
+            className="relative min-h-screen bg-[#0a0715] flex items-center px-1  pb-16 md:pt-50 overflow-hidden"
         >
+            <style>{`
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+        @keyframes rise { 0%{transform:translateY(0) scaleY(0.3);opacity:0} 40%{opacity:1} 100%{transform:translateY(-90px) scaleY(1);opacity:0} }
+        @keyframes particle { 0%{transform:translateY(0);opacity:0} 50%{opacity:1} 100%{transform:translateY(-70px);opacity:0} }
+        @keyframes pulse-line { 0%,100%{opacity:0.3} 50%{opacity:1} }
+        @keyframes glow { 0%,100%{box-shadow:0 0 20px rgba(168,85,247,0.3)} 50%{box-shadow:0 0 40px rgba(168,85,247,0.6)} }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-rise { animation: rise 2.5s ease-out infinite; }
+        .animate-particle { animation: particle 3s ease-out infinite; }
+        .animate-pulse-line { animation: pulse-line 2s ease-in-out infinite; }
+        .animate-glow { animation: glow 2.5s ease-in-out infinite; }
+      `}</style>
             {/* ambient background wash behind the whole section */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-[#8B5CF6] opacity-10 blur-[110px]" />
+                <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full  opacity-10 blur-[110px]" />
             </div>
 
-            <div className="relative max-w-[1650px] mx-auto px-6 lg:px-12 grid md:grid-cols-2 gap-12 md:gap-8 items-center w-full">
+            <div className="relative max-w-[1650px] mx-auto px-6 lg:px-12 grid md:grid-cols-2 gap-12 md:gap-8 items-start w-full">
                 {/* Left: copy */}
                 <motion.div
                     initial={{ opacity: 0, y: 24 }}
@@ -60,27 +72,6 @@ export default function HeroSection() {
                         </button>
                     </div>
 
-                    <div className="mt-10 flex items-center gap-3">
-                        <div className="flex -space-x-3">
-                            {['ND', 'RK', 'SP', 'AL'].map((initials, i) => (
-                                <div
-                                    key={initials}
-                                    className="w-9 h-9 rounded-full border-2 flex items-center justify-center text-[10px] font-semibold text-white"
-                                    style={{
-                                        borderColor: '#050505',
-                                        background: 'linear-gradient(135deg, #3B82F6, #A855F7)',
-                                        zIndex: 10 - i,
-                                    }}
-                                >
-                                    {initials}
-                                </div>
-                            ))}
-                        </div>
-                        <p className="text-sm text-white/50">
-                            Join 10,000+ developers
-                            <br className="hidden sm:block" /> building smarter
-                        </p>
-                    </div>
                 </motion.div>
 
                 {/* Right: cinematic hero illustration */}
@@ -88,9 +79,9 @@ export default function HeroSection() {
                     initial={{ opacity: 0, scale: 0.94 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                    className="relative w-full aspect-square max-w-[560px] mx-auto"
+                    className="relative w-full px-2 -mt-20 aspect-square max-w-[700px] mx-auto"
                 >
-                    <img src={heroright} alt="Memora" className="h-4 flex justify-end w-auto z-10 md:h-[400px]" />
+                    <HeroOrb />
 
                 </motion.div>
 
