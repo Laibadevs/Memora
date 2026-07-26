@@ -110,7 +110,7 @@ export default function HeroSection() {
                 <motion.div
                     {...fade}
                     transition={{ ...fade.transition, delay: 0.5, duration: 0.8 }}
-                    className="relative w-full px-2 -mt-20 aspect-square max-w-[700px] mx-auto"
+                    className="relative w-full px-2 -mt-20 ml-20 aspect-square max-w-[700px] mx-auto"
                 >
                     <HeroOrb />
                 </motion.div>
