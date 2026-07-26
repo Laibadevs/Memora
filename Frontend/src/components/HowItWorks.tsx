@@ -356,7 +356,7 @@ function Connector() {
 export default function HowItWorks() {
     return (
         <section
-            className="relative overflow-hidden -mt-40 py-24 px-4 sm:px-6 lg:px-8"
+            className="relative overflow-hidden -mt-70 py-24 px-4 sm:px-6 lg:px-8"
             style={
                 {
                     "--color-background": "#000000",
@@ -412,12 +412,12 @@ export default function HowItWorks() {
                     <motion.div
                         {...fade}
                         transition={{ ...fade.transition, delay: 0.05 }}
-                        className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium uppercase tracking-widest backdrop-blur"
+                        className="mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-widest backdrop-blur"
                         style={{
                             border: "1px solid color-mix(in oklab, var(--color-accent) 30%, transparent)",
                             background: "color-mix(in oklab, var(--color-primary) 10%, transparent)",
                             color: "color-mix(in oklab, var(--color-accent) 80%, var(--color-white))",
-                            fontFamily: "var(--font-subheading)",
+                            fontFamily: "var(--font-heading)",
                         }}
                     >
                         <Sparkles className="h-3.5 w-3.5" />
