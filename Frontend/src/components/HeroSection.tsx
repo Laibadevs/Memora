@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight, Play, Sparkles } from 'lucide-react'
 import { HeroOrb } from "./HeroOrb3d";
 
+
 const fade = {
     initial: { opacity: 0, y: 24 },
     whileInView: { opacity: 1, y: 0 },
@@ -45,7 +46,7 @@ export default function HeroSection() {
                 <div>
                     <motion.span
                         {...fade}
-                        transition={{ ...fade.transition, delay: 0.1 }}
+                        transition={{ ...fade.transition, delay: 0.2 }}
                         className="inline-flex items-center gap-1.5 text-[13px] font-medium px-3.5 py-1.5 rounded-full mb-6"
                         style={{
                             background: 'rgba(139,92,246,0.12)',
@@ -58,7 +59,7 @@ export default function HeroSection() {
 
                     <motion.h1
                         {...fade}
-                        transition={{ ...fade.transition, delay: 0.2 }}
+                        transition={{ ...fade.transition, delay: 0.3 }}
                         className="font-semibold text-4xl sm:text-5xl lg:text-6xl leading-[1.08] tracking-tight text-white"
                     >
                         Every Project Has Data.
@@ -70,7 +71,7 @@ export default function HeroSection() {
 
                     <motion.p
                         {...fade}
-                        transition={{ ...fade.transition, delay: 0.3 }}
+                        transition={{ ...fade.transition, delay: 0.4 }}
                         className="mt-6 text-white/60 text-base sm:text-lg max-w-lg leading-relaxed"
                     >
                         Turn scattered conversations, repositories, documents, and meetings into an AI that
@@ -79,7 +80,7 @@ export default function HeroSection() {
 
                     <motion.div
                         {...fade}
-                        transition={{ ...fade.transition, delay: 0.4 }}
+                        transition={{ ...fade.transition, delay: 0.5 }}
                         className="mt-9 flex flex-col sm:flex-row gap-4"
                     >
                         <motion.button
@@ -109,7 +110,7 @@ export default function HeroSection() {
                 {/* Right: cinematic hero illustration */}
                 <motion.div
                     {...fade}
-                    transition={{ ...fade.transition, delay: 0.5, duration: 0.8 }}
+                    transition={{ ...fade.transition, delay: 0.6, duration: 0.8 }}
                     className="relative w-full px-2 -mt-20 ml-20 aspect-square max-w-[700px] mx-auto"
                 >
                     <HeroOrb />
