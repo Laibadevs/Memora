@@ -356,7 +356,7 @@ function Connector() {
 export default function HowItWorks() {
     return (
         <section
-            className="relative overflow-hidden -mt-70 py-24 px-4 sm:px-6 lg:px-8"
+            className="relative overflow-hidden -mt-60 py-24 px-4 sm:px-6 lg:px-8"
             style={
                 {
                     "--color-background": "#000000",

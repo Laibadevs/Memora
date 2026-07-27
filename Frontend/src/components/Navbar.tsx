@@ -13,6 +13,13 @@ const NAV_LINKS = [
     { label: 'Docs', id: 'docs' },
 ]
 
+const fade = {
+    initial: { opacity: 0, y: 24 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, margin: "-80px" },
+    transition: { duration: 0.6 },
+};
+
 export default function Navbar() {
     const [open, setOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
@@ -54,16 +61,22 @@ export default function Navbar() {
                 }`}
         >
             <nav className="max-w-[1650px] mx-auto flex items-center justify-between px-6 pt-5 lg:px-12 h-16 md:h-20">
-                <button
+                <motion.button
+                    {...fade}
+                    transition={{ ...fade.transition, delay: 0 }}
                     onClick={() => goToSection('hero')}
                     className="flex items-center gap-4 shrink-0"
                     aria-label="Memora home"
                 >
                     <img src={MemoraLogo} alt="" className="h-5 w-auto  md:h-10" />
                     <img src={MemoraWord} alt="Memora" className="h-4 w-auto z-10 md:h-[20px]" />
-                </button>
+                </motion.button>
 
-                <ul className="hidden md:flex items-center gap-20">
+                <motion.ul
+                    {...fade}
+                    transition={{ ...fade.transition, delay: 0.1 }}
+                    className="hidden md:flex items-center gap-20"
+                >
                     {NAV_LINKS.map((link) => (
                         <li key={link.id}>
                             <button
@@ -75,9 +88,13 @@ export default function Navbar() {
                             </button>
                         </li>
                     ))}
-                </ul>
+                </motion.ul>
 
-                <div className="hidden md:flex items-center gap-6">
+                <motion.div
+                    {...fade}
+                    transition={{ ...fade.transition, delay: 0.2 }}
+                    className="hidden md:flex items-center gap-6"
+                >
                     <button
                         className="group relative px-3 py-2 text-base font-medium text-white/80 hover:text-white transition-all duration-300"
                     >
@@ -91,16 +108,18 @@ export default function Navbar() {
                     >
                         Sign Up
                     </button>
-                </div>
+                </motion.div>
 
-                <button
+                <motion.button
+                    {...fade}
+                    transition={{ ...fade.transition, delay: 0.3 }}
                     className="md:hidden p-2 text-white"
                     onClick={() => setOpen((o) => !o)}
                     aria-label="Toggle menu"
                     aria-expanded={open}
                 >
                     {open ? <X size={26} /> : <Menu size={26} />}
-                </button>
+                </motion.button>
             </nav>
 
             <AnimatePresence>
