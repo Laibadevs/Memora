@@ -4,6 +4,7 @@ import { motion, useAnimationControls } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 
 
+
 /**
  * Cinematic Memora hero orb
  * - System boot → platform → integrations → orb charge → logo → network → idle loop
@@ -20,14 +21,34 @@ type Integration = {
 
 // Activation order: Zapier, Notion, GitHub, OpenAI, PDF, Figma, Google Docs, Slack
 const INTEGRATIONS: Integration[] = [
-    { key: "zapier", label: "Zapier", src: "https://cdn.simpleicons.org/zapier/ff4a00", order: 0 },
+    {
+        key: "perplexity",
+        label: "Perplexity",
+        src: "https://cdn.simpleicons.org/perplexity/ffffff",
+        order: 0,
+    },
     { key: "notion", label: "Notion", src: "https://cdn.simpleicons.org/notion/ffffff", order: 1 },
     { key: "github", label: "GitHub", src: "https://cdn.simpleicons.org/github/ffffff", order: 2 },
-    { key: "openai", label: "OpenAI", src: "https://cdn.simpleicons.org/openai/10a37f", order: 3 },
-    { key: "pdf", label: "PDF", src: "https://cdn.simpleicons.org/adobeacrobatreader/ec1c24", order: 4 },
-    { key: "figma", label: "Figma", src: "https://cdn.simpleicons.org/figma/a259ff", order: 5 },
-    { key: "gdocs", label: "Google Docs", src: "https://cdn.simpleicons.org/googledocs/4285f4", order: 6 },
-    { key: "slack", label: "Slack", src: "https://cdn.simpleicons.org/slack/4a154b", order: 7 },
+    {
+        key: "openai",
+        label: "OpenAI",
+        src: "https://api.iconify.design/simple-icons:openai.svg?color=%23ffffff",
+        order: 4,
+    },
+    {
+        key: "cursor",
+        label: "Cursor",
+        src: "https://api.iconify.design/simple-icons:cursor.svg?color=%23FFFFFF",
+        order: 3,
+    },
+    { key: "figma", label: "Figma", src: "https://cdn.simpleicons.org/figma/ffffff", order: 5 },
+    { key: "gdocs", label: "Google Docs", src: "https://cdn.simpleicons.org/googledocs/ffffff", order: 6 },
+    {
+        key: "cline",
+        label: "Cline",
+        src: "https://api.iconify.design/simple-icons:cline.svg?color=%23ffffff",
+        order: 7,
+    }
 ];
 
 // SVG canvas
