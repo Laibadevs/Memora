@@ -27,10 +27,11 @@ import {
     Calendar,
     Tag,
     Search,
+    CloudUpload,
     File,
 } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
-// import { SiClaude } from "react-icons/si";
+import { SiClaude } from "react-icons/si";
 
 import { motion } from "framer-motion";
 
@@ -49,7 +50,7 @@ function CaptureVisual() {
         { label: "notion", top: "12%", left: "62%" },
         { label: "github", top: "44%", left: "14%" },
         { label: "slack", top: "44%", left: "78%" },
-        { label: "docs", top: "74%", left: "32%" },
+        { label: "claude", top: "74%", left: "32%" },
         { label: "pdf", top: "74%", left: "60%" },
     ];
     return (
@@ -67,7 +68,7 @@ function CaptureVisual() {
                         boxShadow: "0 0 40px color-mix(in oklab, var(--color-accent) 70%, transparent)",
                     }}
                 >
-                    <Sparkles className="h-6 w-6" style={{ color: "var(--color-white)" }} />
+                    <CloudUpload className="h-6 w-6" style={{ color: "var(--color-white)" }} />
                 </div>
             </motion.div>
 
@@ -112,7 +113,7 @@ function CaptureVisual() {
                             <path fill="#ECB22E" d="M15 18a2 2 0 1 1-2 2v-2h2zm0-1a2 2 0 1 1 0-4h5a2 2 0 1 1 0 4h-5z" />
                         </svg>
                     )}
-                    {it.label === "docs" && <FileText className="h-5 w-5" style={{ color: "var(--color-secondary)" }} />}
+                    {it.label === "claude" && <SiClaude className="h-5 w-5" style={{ color: "orange" }} />}
                     {it.label === "pdf" && <File className="h-5 w-5" style={{ color: "#f87171" }} />}
                 </motion.div>
             ))}
@@ -196,7 +197,7 @@ function UnderstandVisual() {
         { x: 30, y: 40, Icon: Calendar, big: true },
         { x: 55, y: 50, Icon: Sparkles },
         { x: 20, y: 72, Icon: Tag },
-        { x: 78, y: 55, Icon: FileText, big: true },
+        { x: 78, y: 55, Icon: SiClaude, big: true },
         { x: 55, y: 82, Icon: FileText },
     ];
     const edges: [number, number][] = [
@@ -323,7 +324,7 @@ function DeliverVisual() {
 }
 
 const steps = [
-    { num: "1", title: "Capture", desc: "Paste anything—notes, docs, links, audio.", Visual: CaptureVisual },
+    { num: "1", title: "Capture", desc: "Paste anything—notes, claude, links, audio.", Visual: CaptureVisual },
     { num: "2", title: "Analyze", desc: "Memora extracts key insights, decisions, and next actions.", Visual: AnalyzeVisual },
     { num: "3", title: "Understand", desc: "It builds a living knowledge graph of your project.", Visual: UnderstandVisual },
     { num: "4", title: "Deliver", desc: "Ask anything and get answers backed by real context.", Visual: DeliverVisual },
