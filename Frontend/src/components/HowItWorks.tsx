@@ -356,8 +356,8 @@ function Connector() {
 
 export default function HowItWorks() {
     return (
-        <section
-            className="relative overflow-hidden -mt-60 py-24 px-4 sm:px-6 lg:px-8"
+        <section id="how-it-works"
+            className=" relative overflow-hidden -mt-60 py-24 px-4 sm:px-6 lg:px-8 bg-[color:var(--color-background)]"
             style={
                 {
                     "--color-background": "#000000",
@@ -398,13 +398,10 @@ export default function HowItWorks() {
         .animate-glow { animation: glow 2.8s ease-in-out infinite; }
         .animate-pulse-slow { animation: pulse-slow 3s ease-in-out infinite; }
       `}</style>
-
-            {/* ambient background glow
+            {/* // ambient background
             <div className="pointer-events-none absolute inset-0">
-                <div
-                    className="absolute left-1/2 top-25 h-96  w-[50rem] -translate-x-1/2 rounded-full blur-3xl"
-                    style={{ background: "color-mix(in oklab, var(--color-primary) 10%, transparent)" }}
-                />
+                <div className="absolute left-1/2 top-30 h-[500px] w-[900px] -translate-x-1/2 rounded-full bg-[#8b5cf6]/10 blur-[140px]" />
+                <div className="absolute bottom-0 right-0 h-[400px] w-[500px] rounded-full bg-[#3b82f6]/10 blur-[120px]" />
             </div> */}
 
             <div className="relative mx-auto max-w-7xl">
