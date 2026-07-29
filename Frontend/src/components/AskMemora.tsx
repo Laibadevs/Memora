@@ -17,8 +17,8 @@ const sources = [
 export default function AskMemora() {
     return (
         <section
-            id="ask-memora"
-            className="relative overflow-hidden -mt-10  py-24 px-4 sm:px-6 lg:px-8"
+            id="features"
+            className="relative overflow-hidden py-24 px-4 sm:px-6 lg:px-8 "
         >
             <style>{`
         @keyframes am-glow {
@@ -75,7 +75,7 @@ export default function AskMemora() {
                 />
             </div>
 
-            <div className="relative mx-auto  max-w-[1650px] px-6 lg:px-12">
+            <div className="relative mx-auto -ml-5  max-w-[1650px] px-6 lg:px-12">
                 {/* Centered top badge */}
                 <motion.div {...fade} className="mb-10 flex justify-center">
                     <span
@@ -175,7 +175,7 @@ export default function AskMemora() {
                                     <linearGradient id="brain-line" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="0%" stopColor="#7C3AED" stopOpacity="0" />
                                         <stop offset="35%" stopColor="#8B5CF6" stopOpacity="0.6" />
-                                        <stop offset="100%" stopColor="#A855F7" stopOpacity="1" />
+                                        <stop offset="10%" stopColor="#A855F7" stopOpacity="1" />
                                     </linearGradient>
 
                                     <filter id="lineGlow">
@@ -226,15 +226,15 @@ export default function AskMemora() {
 "
                                 style={{
                                     background:
-                                        "radial-gradient(circle at 30% 30%, rgba(214,180,255,.95), rgba(168,85,247,.65) 65%, rgba(124,58,237,.35) 100%)",
-                                    border: "1px solid rgba(180,120,255,.22)",
-                                    opacity: 15,
-                                    boxShadow:
-                                        `
-                            0 0 14px rgba(168,85,247,.55),
-                            0 0 34px rgba(168,85,247,.30),
-                            0 0 70px rgba(168,85,247,.18)
-        `,
+                                        "radial-gradient(circle at 30% 30%, #C084FC 0%, #8B5CF6 60%, #5B21B6 100%)",
+
+                                    border: "1px solid rgba(192,132,252,.35)",
+
+                                    boxShadow: `
+  0 0 22px rgba(168,85,247,.65),
+  0 0 44px rgba(168,85,247,.35),
+  0 0 90px rgba(168,85,247,.20)
+`,
                                 }}
 
                             >
