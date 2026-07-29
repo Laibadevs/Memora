@@ -17,7 +17,7 @@ const sources = [
 export default function MeetingAssistant() {
     return (
         <section className="py-20 px-4 md:px-8 bg-[color:var(--color-background)] ">
-            <div className="max-w-7xl ml-5 gap-10 mx-auto">
+            <div className="max-w-7xl ml-10 gap-10 mx-auto">
                 <motion.div {...fade} className="mb-10 flex ml-20 justify-center">
                     <motion.div {...fade} className="mb-10 flex justify-center">
                         <span
