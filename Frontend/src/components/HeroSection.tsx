@@ -14,7 +14,7 @@ export default function HeroSection() {
     return (
         <section
             id="hero"
-            className="relative min-h-screen  flex items-center px-1  pb-16 md:pt-50 overflow-hidden"
+            className="relative min-h-screen  flex items-center px-1  pb-16 md:pt-50 overflow-hidden bg-[color:var(--color-background)]"
         >
             <style>{`
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
