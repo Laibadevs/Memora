@@ -18,7 +18,7 @@ export default function AskMemora() {
     return (
         <section
             id="features"
-            className="relative overflow-hidden py-24 px-4 sm:px-6 lg:px-8 "
+            className="relative overflow-hidden py-24 px-4 sm:px-6 lg:px-8 bg-[color:var(--color-background)] "
         >
             <style>{`
         @keyframes am-glow {
