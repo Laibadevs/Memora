@@ -1,12 +1,14 @@
 import Navbar from '../components/Navbar'
 import HeroSection from '../components/HeroSection'
 import HowItWorks from '../components/HowItWorks'
-// import AskMemora from '../components/AskMemora'
-// import ProjectOverview from '../components/ProjectOverview'
-// import AIMeetingMode from '../components/AIMeetingMode'
-// import CTASection from '../components/CTASection'
+import AskMemora from '../components/AskMemora'
+import ProjectOverview from '../components/ProjectOverview'
+import AIMeetingMode from '../components/AIMeetingMode'
+import CTASection from '../components/CTASection'
+import Pricing from '../components/Pricing'
+import Docs from '../components/Docs'
 // import FAQSection from '../components/FAQSection'
-// import Footer from '../components/Footer'
+import Footer from '../components/Footer'
 
 export default function Home() {
     return (
@@ -15,13 +17,15 @@ export default function Home() {
             <main>
                 <HeroSection />
                 <HowItWorks />
-                {/* <AskMemora />
-        <ProjectOverview />
-        <AIMeetingMode />
-        <CTASection />
-        <FAQSection />   */}
+                <AskMemora />
+                <ProjectOverview />
+                <AIMeetingMode />
+                <Pricing />
+                <Docs />
+                <CTASection />
+                {/* <FAQSection />       */}
             </main>
-            {/* <Footer /> */}
+            <Footer />
         </div>
     )
 }
