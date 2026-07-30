@@ -14,7 +14,7 @@ const tiers = [
         priceLabel: "Forever",
         price: "$0",
         suffix: "",
-        features: ["1 Project", "Connect GitHub", "Connect Notion", "AI Project Memory", "Basic Search"],
+        features: ["1 Project", "Connect GitHub", "Connect Claude", "AI Project Memory", "Basic Search"],
         cta: "Get Started",
         popular: false,
     },
