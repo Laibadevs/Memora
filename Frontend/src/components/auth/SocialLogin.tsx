@@ -33,7 +33,7 @@ export default function SocialLogin({
         <div className="w-full">
             {/* Divider */}
             <div
-                className="my-6 flex items-center gap-3 text-[11px] sm:text-xs  tracking-wider"
+                className="my-5 sm:my-6 flex items-center gap-3 text-[11px] sm:text-xs  tracking-wider"
                 style={{ color: "var(--color-gray)" }}
             >
                 <div
@@ -52,7 +52,7 @@ export default function SocialLogin({
             </div>
 
             {/* Buttons */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2.5 sm:gap-3">
                 {PROVIDERS.map((provider, i) => (
                     <motion.button
                         key={provider.id}
@@ -76,17 +76,19 @@ export default function SocialLogin({
               relative
               flex
               w-full
-              h-8
+              h-9
+              sm:h-10
               items-center
               justify-center
-              gap-3
+              gap-2.5
+              sm:gap-3
               overflow-hidden
               rounded-xl
               border
-              px-5
-              py-3.5
-              text-[12px]:py-4
-              text-[12px]
+              px-4
+              sm:px-5
+              text-[11px]
+              sm:text-[12px]
               font-normal
               transition-all
               duration-300
@@ -101,8 +103,7 @@ export default function SocialLogin({
                             borderColor: "var(--color-border)",
                             color: "var(--color-white)",
                         }}
-                    >
-                        {/* Hover Glow */}
+                    >                         {/* Hover Glow */}
                         <span
                             className="
                 absolute
@@ -150,7 +151,7 @@ export default function SocialLogin({
                         </span>
 
                         {/* Text */}
-                        <span className="relative z-10">
+                        <span className="relative z-10 whitespace-nowrap">
                             {provider.label}
                         </span>
                     </motion.button>
