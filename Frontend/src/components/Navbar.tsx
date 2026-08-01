@@ -37,25 +37,37 @@ export default function Navbar() {
     // If we land on "/" with a hash (e.g. coming from another route),
     // scroll to that section once the page has mounted.
     useEffect(() => {
-        if (location.hash) {
-            const el = document.querySelector(location.hash)
-            if (el) el.scrollIntoView({ behavior: 'smooth' })
-        }
-    }, [location])
+        const params = new URLSearchParams(location.search);
+        const id = params.get("scrollTo");
 
-    const goToSection = (id: string) => {
-        setOpen(false)
-        if (location.pathname !== '/') {
-            navigate(`/#${id}`)
-            return
-        }
-        const el = document.getElementById(id)
+        if (!id) return;
+
+        const el = document.getElementById(id);
+
         if (el) {
-            el.scrollIntoView({ behavior: 'smooth' })
-        } else {
-            navigate(`/#${id}`)
+            setTimeout(() => {
+                el.scrollIntoView({
+                    behavior: "smooth",
+                });
+            }, 100);
         }
-    }
+    }, [location]);
+    const goToSection = (id: string) => {
+        setOpen(false);
+
+        if (location.pathname !== "/") {
+            navigate(`/?scrollTo=${id}`);
+            return;
+        }
+
+        const el = document.getElementById(id);
+
+        if (el) {
+            el.scrollIntoView({
+                behavior: "smooth",
+            });
+        }
+    };
 
     return (
         <header
@@ -66,7 +78,7 @@ export default function Navbar() {
                 <motion.button
                     {...fade}
                     transition={{ ...fade.transition, delay: 0 }}
-                    onClick={() => goToSection('hero')}
+                    onClick={() => navigate("/")}
                     className="flex items-center gap-4 shrink-0"
                     aria-label="Memora home"
                 >
@@ -106,7 +118,7 @@ export default function Navbar() {
                         <span className="absolute left-1/2 -translate-x-1/2 bottom-1 h-[2px] w-0 rounded-full bg-gradient-to-r from-[#3B82F6] via-[#8B5CF6] to-[#A855F7] transition-all duration-300 group-hover:w-full" />
                     </button>
                     <button
-                        onClick={() => goToSection('pricing')}
+                        onClick={() => navigate('/signup')}
                         className="text-base font-medium text-white px-5 py-2.5 rounded-full bg-[linear-gradient(90deg,#3B82F6_0%,#6366F1_40%,#8B5CF6_75%,#A855F7_100%)] hover:opacity-90 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(139,92,246,0.45)] transition-all duration-200"
                     >
                         Sign Up
