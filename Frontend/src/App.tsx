@@ -6,6 +6,7 @@ import ForgotPassword from "./pages/ForgetPassowrd";
 import ResetPassword from "./pages/ResetPassword";
 import PasswordChanges from "./pages/PasswordChanges";
 import EmailSent from "./pages/EmailSent";
+import DashBoard from "./pages/DashBoard.tsx";
 function App() {
   return (
     <Routes>
@@ -19,6 +20,7 @@ function App() {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/password-changes" element={<PasswordChanges />} />
       <Route path="/email-sent" element={<EmailSent />} />
+      <Route path="/dashboard" element={<DashBoard />} />
     </Routes>
   )
 }
