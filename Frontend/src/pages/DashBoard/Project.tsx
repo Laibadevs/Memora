@@ -1,6 +1,6 @@
 import { useState } from "react";
 import DashboardLayout from "../../components/dashboard/layout/DashboardLayout";
-import ProjectHeader from "../../components/dashboard/hero/WelcomeHeader";
+import ProjectHeader from "../../components/dashboard/project/ProjectHeader";
 import ProjectStats from "../../components/dashboard/stats/StatsGrid";
 import ProjectFilters from "../../components/dashboard/project/ProjectFilters";
 import ProjectGrid from "../../components/dashboard/project/ProjectGrid";
@@ -16,11 +16,7 @@ export default function Projects() {
     const [modal, setModal] = useState(false);
 
     return (
-        <DashboardLayout
-            active="Projects"
-
-            onCreate={() => setModal(true)}
-        >
+        <DashboardLayout>
             <div className="grid gap-7">
                 <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-end">
                     <ProjectHeader />
