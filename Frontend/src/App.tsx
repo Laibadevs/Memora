@@ -6,7 +6,9 @@ import ForgotPassword from "./pages/ForgetPassowrd";
 import ResetPassword from "./pages/ResetPassword";
 import PasswordChanges from "./pages/PasswordChanges";
 import EmailSent from "./pages/EmailSent";
-import DashBoard from "./pages/DashBoard.tsx";
+import DashBoard from "./pages/DashBoard/DashBoard";
+import ProjectPage from "./pages/DashBoard/Project";
+import ProjectChat from "./pages/DashBoard/ProjectChat"
 function App() {
   return (
     <Routes>
@@ -21,6 +23,8 @@ function App() {
       <Route path="/password-changes" element={<PasswordChanges />} />
       <Route path="/email-sent" element={<EmailSent />} />
       <Route path="/dashboard" element={<DashBoard />} />
+      <Route path="/project" element={<ProjectPage />} />
+      <Route path="/project/:id" element={<ProjectChat />} />
     </Routes>
   )
 }
