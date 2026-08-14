@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { AudioLines, MonitorPlay, BarChart3 } from "lucide-react";
+import { AudioLines, MonitorPlay } from "lucide-react";
 import Card from "../../common/Card";
 import Badge from "../../common/Badge";
 import Button from "../../common/Button";
@@ -79,7 +79,6 @@ export default function PresentationCard() {
                 <Button variant="outline" className="flex-1 whitespace-nowrap" icon={<MonitorPlay size={18} />}>Open Presentation</Button>
                 <Button variant="outline" className="flex-1 whitespace-nowrap" icon={<AudioLines size={18} />}>Practice with AI</Button>
             </div>
-            <BarChart3 className="hidden" />
         </Card>
     );
 }
