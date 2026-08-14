@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import { Bell, Plus, ChevronDown, Menu } from "lucide-react";
+import { Bell, Plus, Menu } from "lucide-react";
 import SearchBar from "../../common/SearchBar";
-import Avatar from "../../common/Avatar";
 import WelcomeHeader from "../../dashboard/hero/WelcomeHeader";
+import UserMenu from "./UserMenu";
 
 export default function Topbar({ onMenu }: { onMenu?: () => void }) {
     return (
@@ -49,10 +49,7 @@ export default function Topbar({ onMenu }: { onMenu?: () => void }) {
                     </span>
                 </motion.button>
 
-                <button className="flex items-center gap-2">
-                    <Avatar name="John Smith" size={40} />
-                    <ChevronDown size={16} className="text-slate-500" />
-                </button>
+                <UserMenu compact />
             </div>
         </header>
     );
