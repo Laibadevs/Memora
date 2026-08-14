@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { FileText, Video, MonitorPlay, Star } from "lucide-react";
 // import ProjectMembers from "./ProjectMembers";
 import ProjectMenu from "../project/ProjectMenu";
@@ -36,6 +37,7 @@ function Aurora({ color }: { color: string }) {
 }
 
 export default function ProjectCard({ project: p, view, index, onStar, onDelete }: Props) {
+    const navigate = useNavigate();
     const metrics = [
         { Icon: FileText, value: p.documents, label: "Documents", color: "#94a3b8" },
         { Icon: Video, value: p.meetings, label: "Meetings", color: "#3b82f6" },
@@ -45,12 +47,18 @@ export default function ProjectCard({ project: p, view, index, onStar, onDelete 
     return (
         <motion.article
             layout
+            role="button"
+            tabIndex={0}
+            onClick={() => navigate(`/project/${p.id}`)}
+            onKeyDown={(e) => {
+                if (e.key === "Enter") navigate(`/project/${p.id}`);
+            }}
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12, scale: 0.97 }}
             transition={{ duration: 0.5, delay: Math.min(index * 0.06, 0.3) }}
             whileHover={{ y: -6 }}
-            className={`group relative overflow-hidden rounded-2xl border backdrop-blur-xl ${view === "list" ? "grid gap-4 p-5 lg:grid-cols-[minmax(0,1.6fr)_auto_auto]" : "flex flex-col"
+            className={`group relative cursor-pointer overflow-hidden rounded-2xl border backdrop-blur-xl ${view === "list" ? "grid gap-4 p-5 lg:grid-cols-[minmax(0,1.6fr)_auto_auto]" : "flex flex-col"
                 }`}
             style={{
                 borderColor: "#221f38",
@@ -90,7 +98,10 @@ export default function ProjectCard({ project: p, view, index, onStar, onDelete 
                     <motion.button
                         whileHover={{ scale: 1.2, rotate: 12 }}
                         whileTap={{ scale: 0.9 }}
-                        onClick={() => onStar(p.id)}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onStar(p.id);
+                        }}
                         aria-label={p.starred ? "Unstar project" : "Star project"}
                         className="shrink-0 text-slate-500 transition-colors hover:text-amber-300"
                     >
@@ -141,7 +152,7 @@ export default function ProjectCard({ project: p, view, index, onStar, onDelete 
                     ))}
                 </div>
 
-                <div className="mt-4 flex items-center justify-between gap-3 border-t pt-4" style={{ borderColor: "#1c1934" }}>
+                <div className="mt-4 flex items-center justify-between gap-3 border-t pt-4" style={{ borderColor: "#1c1934" }} onClick={(e) => e.stopPropagation()}>
 
                     <div className="flex shrink-0 items-center gap-1">
                         <span className="whitespace-nowrap text-[11px] text-slate-500">Updated {p.updatedAt}</span>
