@@ -12,4 +12,15 @@ export const projectService = {
     find(id: string): Project | undefined {
         return projects.find((p) => p.id === id);
     },
+    add(project: Project) {
+        projects.unshift(project);
+    },
+    remove(id: string) {
+        const i = projects.findIndex((p) => p.id === id);
+        if (i !== -1) projects.splice(i, 1);
+    },
+    toggleStar(id: string) {
+        const p = projects.find((p) => p.id === id);
+        if (p) p.starred = !p.starred;
+    },
 };
