@@ -11,12 +11,20 @@ export function useProjects() {
         return () => clearTimeout(t);
     }, []);
 
-    const toggleStar = (id: string) =>
+    const toggleStar = (id: string) => {
+        projectService.toggleStar(id);
         setData((prev) => prev.map((p) => (p.id === id ? { ...p, starred: !p.starred } : p)));
+    };
 
-    const addProject = (p: Project) => setData((prev) => [p, ...prev]);
+    const addProject = (p: Project) => {
+        projectService.add(p);
+        setData((prev) => [p, ...prev]);
+    };
 
-    const removeProject = (id: string) => setData((prev) => prev.filter((p) => p.id !== id));
+    const removeProject = (id: string) => {
+        projectService.remove(id);
+        setData((prev) => prev.filter((p) => p.id !== id));
+    };
 
     return { projects: data, loading, toggleStar, addProject, removeProject };
 }
