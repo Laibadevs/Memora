@@ -1,84 +1,141 @@
-import { motion } from "framer-motion";
-import { AudioLines, MonitorPlay, BarChart3 } from "lucide-react";
-import Card from "../../common/Card";
-import Badge from "../../common/Badge";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { X, FolderPlus } from "lucide-react";
 import Button from "../../common/Button";
-import ProgressBar from "../../common/ProgressBar";
-import { usePresentation } from "../../../hooks/useDashBoard";
+import type { Project } from "../../../types/project";
 
-export default function PresentationCard() {
-    const deck = usePresentation();
+const COLORS = ["#8b5cf6", "#3b82f6", "#22c55e", "#f97316", "#ec4899", "#f59e0b"];
+
+interface CreateProjectModalProps {
+    open: boolean;
+    onClose: () => void;
+    onCreate: (project: Project) => void;
+}
+
+export default function CreateProjectModal({ open, onClose, onCreate }: CreateProjectModalProps) {
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [color, setColor] = useState(COLORS[0]);
+
+    const handleCreate = () => {
+        if (!name.trim()) return;
+
+        const project: Project = {
+            id: crypto.randomUUID(),
+            name: name.trim(),
+            description: description.trim(),
+            initial: name.trim()[0]?.toUpperCase() ?? "P",
+            color,
+            status: "active",
+            starred: false,
+            documents: 0,
+            meetings: 0,
+            presentations: 0,
+            members: [],
+            extraMembers: 0,
+            updatedAt: "Just now",
+            progress: 0,
+        };
+
+        onCreate(project);
+        setName("");
+        setDescription("");
+        setColor(COLORS[0]);
+        onClose();
+    };
 
     return (
-        <Card delay={0.08}>
-            <div className="flex items-center justify-between gap-3">
-                <p className="flex min-w-0 items-center gap-2 text-base font-semibold text-slate-50">
-                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg" style={{ background: "rgba(59,130,246,0.16)" }}>
-                        <MonitorPlay size={16} className="text-sky-300" />
-                    </span>
-                    <span className="truncate">Today's Presentation</span>
-                </p>
-                <Badge color="#22c55e">Ready</Badge>
-            </div>
-
-            <div className="mt-3 flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                    <p className="text-lg font-bold text-slate-50">{deck.title}</p>
-                    <p className="mt-1 text-sm text-slate-400">
-                        {deck.slides} slides • {deck.updated}
-                    </p>
-
-                    <p className="mt-4 text-4xl font-black text-slate-50">{deck.readiness}%</p>
-                    <p className="text-sm text-slate-400">Ready</p>
-                    <div className="mt-2 max-w-[240px]">
-                        <ProgressBar value={deck.readiness} />
-                    </div>
-                </div>
-
-                {/* floating deck stack */}
-                <div className="relative hidden h-[140px] w-[180px] shrink-0 sm:block">
-                    {[0, 1].map((i) => (
-                        <motion.div
-                            key={i}
-                            animate={{ y: [-4 - i * 2, 6 + i * 2, -4 - i * 2], rotate: [-6 + i * 3, -2 + i * 3, -6 + i * 3] }}
-                            transition={{ duration: 5 + i, repeat: Infinity, ease: "easeInOut" }}
-                            className="absolute rounded-2xl"
-                            style={{
-                                inset: `${20 + i * 14}px ${10 + i * 18}px auto auto`,
-                                width: 130,
-                                height: 100,
-                                background: "linear-gradient(135deg, rgba(139,92,246,0.35), rgba(59,130,246,0.18))",
-                                border: "1px solid rgba(168,85,247,0.4)",
-                                boxShadow: "0 16px 40px -18px rgba(139,92,246,0.9)",
-                                backdropFilter: "blur(6px)",
-                            }}
-                        />
-                    ))}
+        <AnimatePresence>
+            {open && (
+                <>
                     <motion.div
-                        animate={{ y: [0, -8, 0] }}
-                        transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute right-8 top-12 flex h-[86px] items-end gap-1.5 rounded-xl px-3 pb-3"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={onClose}
+                        className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
+                    />
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 12 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 12 }}
+                        transition={{ duration: 0.2 }}
+                        className="fixed left-1/2 top-1/2 z-50 w-[92vw] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-6"
+                        style={{ borderColor: "#2a2748", background: "#0e0c1a" }}
                     >
-                        {[26, 44, 34, 58].map((h, i) => (
-                            <motion.span
-                                key={i}
-                                className="w-3 rounded-t-md"
-                                style={{ background: "linear-gradient(180deg,#c4b5fd,#7c3aed)", boxShadow: "0 0 14px rgba(139,92,246,0.8)" }}
-                                initial={{ height: 6 }}
-                                whileInView={{ height: h }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.9, delay: 0.15 * i, ease: "easeOut" }}
-                            />
-                        ))}
-                    </motion.div>
-                </div>
-            </div>
+                        <div className="mb-5 flex items-center justify-between">
+                            <p className="flex items-center gap-2 text-base font-semibold text-slate-50">
+                                <FolderPlus size={18} className="text-violet-300" /> New Project
+                            </p>
+                            <button
+                                onClick={onClose}
+                                className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 hover:text-white"
+                                aria-label="Close"
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
 
-            <div className="mt-4 flex flex-nowrap gap-2 overflow-x-auto">
-                <Button variant="outline" className="flex-1 whitespace-nowrap" icon={<MonitorPlay size={18} />}>Open Presentation</Button>
-                <Button variant="outline" className="flex-1 whitespace-nowrap" icon={<AudioLines size={18} />}>Practice with AI</Button>
-            </div>
-            <BarChart3 className="hidden" />
-        </Card>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="mb-1.5 block text-xs font-medium text-slate-400">
+                                    Project name
+                                </label>
+                                <input
+                                    autoFocus
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    placeholder="e.g. Mobile App Redesign"
+                                    className="w-full rounded-xl px-3.5 py-2.5 text-sm text-slate-100 outline-none"
+                                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid #221f38" }}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="mb-1.5 block text-xs font-medium text-slate-400">
+                                    Description (optional)
+                                </label>
+                                <textarea
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    placeholder="What is this project about?"
+                                    rows={3}
+                                    className="w-full resize-none rounded-xl px-3.5 py-2.5 text-sm text-slate-100 outline-none"
+                                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid #221f38" }}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="mb-1.5 block text-xs font-medium text-slate-400">
+                                    Color
+                                </label>
+                                <div className="flex gap-2">
+                                    {COLORS.map((c) => (
+                                        <button
+                                            key={c}
+                                            onClick={() => setColor(c)}
+                                            className="h-8 w-8 rounded-full transition-transform"
+                                            style={{
+                                                background: c,
+                                                transform: color === c ? "scale(1.15)" : "scale(1)",
+                                                boxShadow: color === c ? `0 0 0 2px #0e0c1a, 0 0 0 4px ${c}` : "none",
+                                            }}
+                                            aria-label={`Choose color ${c}`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-6 flex justify-end gap-3">
+                            <Button variant="outline" onClick={onClose}>
+                                Cancel
+                            </Button>
+                            <Button onClick={handleCreate}>Create Project</Button>
+                        </div>
+                    </motion.div>
+                </>
+            )}
+        </AnimatePresence>
     );
 }
