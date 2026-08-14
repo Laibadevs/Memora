@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { NavLink } from "react-router-dom";
 import {
     LayoutGrid,
     FolderOpen,
@@ -15,16 +15,15 @@ import {
     Settings,
     Sparkles,
     ArrowRight,
-    ChevronDown,
 } from "lucide-react";
 import MemoraLogo from "../../../assets/LOGO.png";
 import MemoraWord from "../../../assets/memora_word.png";
-import Avatar from "../../common/Avatar";
 import Badge from "../../common/Badge";
+import UserMenu from "../../../components/dashboard/layout/UserMenu";
 
 const items = [
-    { label: "Dashboard", Icon: LayoutGrid },
-    { label: "Projects", Icon: FolderOpen },
+    { label: "Dashboard", Icon: LayoutGrid, to: "/dashboard" },
+    { label: "Projects", Icon: FolderOpen, to: "/project" },
     { label: "Meetings", Icon: Video },
     { label: "Presentations", Icon: MonitorPlay, badge: "New" },
     { label: "AI Chat", Icon: MessageSquare },
@@ -37,9 +36,14 @@ const items = [
     { label: "Settings", Icon: Settings },
 ];
 
-export default function Sidebar() {
-    const [active, setActive] = useState("Dashboard");
+const activeStyle = {
+    color: "#f8fafc",
+    background: "linear-gradient(100deg, rgba(139,92,246,0.9), rgba(109,40,217,0.55))",
+    boxShadow: "0 12px 30px -16px rgba(139,92,246,1)",
+};
+const inactiveStyle = { color: "#9ca3af", background: "transparent", boxShadow: undefined };
 
+export default function Sidebar() {
     return (
         <aside
             className="flex h-full w-[248px] shrink-0 flex-col gap-5 border-r px-4 py-5"
@@ -47,55 +51,66 @@ export default function Sidebar() {
         >
             <div className="flex min-w-0 items-center gap-1 px-1">
                 <div className="flex min-w-0 items-center gap-1 px-1">
-                    <img
-                        src={MemoraLogo}
-                        alt="Memora Logo"
-                        className="h-10 w-20 object-contain"
-                    />
+                    <img src={MemoraLogo} alt="Memora Logo" className="h-10 w-20 object-contain" />
                 </div>
                 <div className="min-w-0">
                     <div className="flex min-w-0 items-center gap-1 px-1">
-                        <img
-                            src={MemoraWord}
-                            alt="Memora word"
-                            className="h-10 w-30 object-contain"
-                        />
+                        <img src={MemoraWord} alt="Memora word" className="h-10 w-30 object-contain" />
                     </div>
                     <p className="truncate text-[11px] text-slate-500">AI  Assistant</p>
                 </div>
             </div>
 
             <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto pr-1">
-                {items.map(({ label, Icon, badge }, i) => {
-                    const isActive = active === label;
-                    return (
-                        <motion.button
-                            key={label}
-                            onClick={() => setActive(label)}
-                            initial={{ opacity: 0, x: -16 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.4, delay: i * 0.035 }}
-                            whileHover={{ x: 4 }}
-                            className="group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm"
-                            style={{
-                                color: isActive ? "#f8fafc" : "#9ca3af",
-                                background: isActive
-                                    ? "linear-gradient(100deg, rgba(139,92,246,0.9), rgba(109,40,217,0.55))"
-                                    : "transparent",
-                                boxShadow: isActive ? "0 12px 30px -16px rgba(139,92,246,1)" : undefined,
-                            }}
-                        >
-                            {isActive && (
-                                <motion.span
-                                    layoutId="nav-glow"
-                                    className="pointer-events-none absolute inset-0 rounded-xl"
-                                    style={{ border: "1px solid rgba(196,181,253,0.35)" }}
-                                />
-                            )}
+                {items.map(({ label, Icon, badge, to }, i) => {
+                    const content = (
+                        <>
                             <Icon size={17} className="shrink-0" />
                             <span className="truncate">{label}</span>
                             {badge && <Badge className="ml-auto" color="#60a5fa">{badge}</Badge>}
-                        </motion.button>
+                        </>
+                    );
+
+                    // Only Dashboard and Projects have real pages today — everything
+                    // else stays a non-navigating item instead of linking to a 404.
+                    if (!to) {
+                        return (
+                            <motion.button
+                                key={label}
+                                type="button"
+                                initial={{ opacity: 0, x: -16 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.4, delay: i * 0.035 }}
+                                className="group relative flex cursor-default items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm opacity-60"
+                                style={inactiveStyle}
+                            >
+                                {content}
+                            </motion.button>
+                        );
+                    }
+
+                    return (
+                        <NavLink key={label} to={to} end>
+                            {({ isActive }) => (
+                                <motion.div
+                                    initial={{ opacity: 0, x: -16 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ duration: 0.4, delay: i * 0.035 }}
+                                    whileHover={{ x: 4 }}
+                                    className="group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm"
+                                    style={isActive ? activeStyle : inactiveStyle}
+                                >
+                                    {isActive && (
+                                        <motion.span
+                                            layoutId="nav-glow"
+                                            className="pointer-events-none absolute inset-0 rounded-xl"
+                                            style={{ border: "1px solid rgba(196,181,253,0.35)" }}
+                                        />
+                                    )}
+                                    {content}
+                                </motion.div>
+                            )}
+                        </NavLink>
                     );
                 })}
             </nav>
@@ -129,16 +144,7 @@ export default function Sidebar() {
                 </motion.button>
             </motion.div>
 
-            <div className="flex items-center gap-3 border-t pt-4" style={{ borderColor: "#1a1730" }}>
-                <Avatar name="John Smith" size={38} />
-                <div className="min-w-0 flex-1">
-                    <p className="flex items-center gap-2 truncate text-sm font-medium text-slate-100">
-                        John Smith <Badge>Pro</Badge>
-                    </p>
-                    <p className="truncate text-[11px] text-slate-500">john@memora.ai</p>
-                </div>
-                <ChevronDown size={16} className="shrink-0 text-slate-500" />
-            </div>
+            <UserMenu />
         </aside>
     );
 }
