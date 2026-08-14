@@ -16,7 +16,7 @@ export default function WelcomeHeader() {
                     transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 2.5 }}
                     className="inline-block origin-bottom"
                 >
-                    👋
+
                 </motion.span>
             </h1>
             <p className="truncate text-sm text-slate-400">
